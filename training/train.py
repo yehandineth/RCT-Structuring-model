@@ -1,8 +1,10 @@
 import tf_keras as keras
 import tensorflow as tf
+import pickle
 
 from processing.preprocessing import Dataset
-from training.model import create_model
+from model import create_model
+from testing import evaluation
 from config.config import *
 
 def main():
@@ -16,8 +18,7 @@ def main():
     history = model.fit(
         train_dataset.pipeline.prefetch(tf.data.AUTOTUNE),
         validation_data=val_dataset.pipeline.prefetch(tf.data.AUTOTUNE),
-        initial_epoch=0,
-        epochs=3,
+        epochs=NUM_EPOCHS,
         shuffle=False,
         batch_size= BATCH_SIZE,
         callbacks=[
@@ -30,6 +31,14 @@ def main():
             )
         ],
     )
+    with open(TRAIN_DIR.joinpath('history.pkl'), mode='wb') as file:
+        pickle.dump(history, file)
+
+    predictions = val_dataset.predict(model=model)
+
+    cm,report,mets =evaluation.get_cm_and_final_results(predictions, val_dataset.y)
+    print('Results by evaluation of dev set\n', mets)
+    cm.im_
 
 if __name__ == '__main__':
 

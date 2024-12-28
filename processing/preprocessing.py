@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 import pickle
 import tf_keras as keras
 import tensorflow as tf
@@ -19,6 +20,8 @@ class Dataset():
             pickle.dump(obj.text_vectorizer.get_vocabulary(),file)
         with open(SERIALIZATION_DIR.joinpath('char_vocabulary.pkl'), 'wb') as file:
             pickle.dump(obj.char_vectorizer.get_vocabulary(),file)
+        with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'wb') as file:
+            pickle.dump(obj.transition_matrix,file)
         return obj.finalize()
     
 
@@ -28,12 +31,13 @@ class Dataset():
         with open(SERIALIZATION_DIR.joinpath('text_vocabulary.pkl'), 'rb') as file:
             obj.text_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
-
             )
         with open(SERIALIZATION_DIR.joinpath('char_vocabulary.pkl'), 'rb') as file:
             obj.char_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
             )
+        with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'rb') as file:
+            obj.transition_matrix = pickle.load(file)
 
         return obj.finalize()
     
@@ -49,6 +53,9 @@ class Dataset():
             obj.char_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
             )
+        
+        with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'rb') as file:
+            obj.transition_matrix = pickle.load(file)
 
         return obj.finalize()
 
@@ -69,11 +76,18 @@ class Dataset():
                 max_tokens=CHARACTER_VOCAB_SIZE,
                 output_sequence_length=CHARACTER_TOKEN_LENGTH
             )
+        self.transition_matrix = np.zeros(shape=(NUM_CLASSES,NUM_CLASSES))
     
     def adapt(self)  -> Self:
 
         self.text_vectorizer.adapt(self.pipeline.map(lambda features, labels: features['text']))
         self.char_vectorizer.adapt(self.pipeline.map(lambda features, labels: features['chars']))
+        t_temp = self.transition_matrix.copy()
+        for f,label in self.pipeline.unbatch().as_numpy_iterator():
+            if f['line_of']:
+                t_temp[last,:] = t_temp[last,:] + label
+            last = np.argmax(label)
+        self.transition_matrix = t_temp/np.repeat(np.sum(t_temp, axis=-1), NUM_CLASSES).reshape(NUM_CLASSES,NUM_CLASSES)
         return self
 
     def finalize(self) -> Self:
@@ -85,7 +99,17 @@ class Dataset():
                                     deterministic=True
                                     ).prefetch(
                                         buffer_size=tf.data.AUTOTUNE)
+        self.y = np.array([np.argmax(l) for f,l in self.pipeline.unbatch().as_numpy_iterator()])
         return self
+
+    def add_transition_probabilities(self, predictions, weight):
+
+        test = predictions['outputs'].copy()
+        for i, (features, labels) in enumerate(self.pipeline.unbatch().as_numpy_iterator()):
+            if features['line_of']:
+                test[i,...] = test[i,...] * (1-weight) + np.dot(self.transition_matrix, last_probs) * weight
+            last_probs =  test[i,...]
+        return test
 
     def split(self, features: Dict[str, Any], labels: Any) -> Tuple[Dict[str, Any], Any]:
         """
@@ -187,5 +211,7 @@ class Dataset():
         """
         return features, tf.one_hot(self.lookup(labels)-1, depth=NUM_CLASSES)
 
-    
+    def predict(self, model : keras.Model, transition_weight : float = TRANSITION_WEIGHT):
+
+        return np.argmax(self.add_transition_probabilities(model.predict(self.pipeline), transition_weight),axis=-1)
 

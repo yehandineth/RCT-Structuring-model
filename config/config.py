@@ -5,7 +5,11 @@ from pathlib import Path
 DF = '20K_replaced_numbers'
 VOCAB_SIZE = 68000
 
+NUM_EPOCHS = 1
+
 SEED = 42
+
+TRANSITION_WEIGHT = 0.33
 
 EMBEDDING_DIMENSIONS = 128
 
