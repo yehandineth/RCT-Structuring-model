@@ -2,6 +2,7 @@ from config.config import *
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import pandas as pd
 import tf_keras as keras
+import matplotlib.pyplot as plt
 
 def get_cm_and_final_results(predictions, truth) -> tuple[ConfusionMatrixDisplay, pd.DataFrame, dict[str, float]]:
     
@@ -76,3 +77,21 @@ def get_cm_and_final_results(predictions, truth) -> tuple[ConfusionMatrixDisplay
     }
     return cm_display, df, output
 
+def confusion_matrix_save(cm, model, location=TRAINING_DATA_DIR):
+    fig, ax = plt.subplots(1,1,figsize=(8,6))
+    fig.suptitle('Confusion matrix fro validation Data', fontsize=20)
+    ax.set_title(f'Model : {model.name}', color=(0.3,0.3,0.3))
+    cm.plot(ax=ax)
+    ax.set_xticklabels(CLASS_NAMES,
+                    fontsize=8)
+    ax.set_yticklabels(CLASS_NAMES,
+                    fontsize=8)
+    ax.set_xlabel(xlabel='Predicted label',
+                    fontsize=10,
+                    color='red')
+    ax.set_ylabel(
+        ylabel='True label',
+        fontsize=10,
+        color='red'
+    )
+    fig.savefig(location.joinpath(f'confusion_matrix_{model.name}.png'))

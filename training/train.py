@@ -14,6 +14,9 @@ from model import create_model
 from testing import evaluation
 from config.config import *
 
+import warnings
+warnings.filterwarnings("ignore")
+
 def main():
 
     train_dataset = Dataset.create_training_pipeline(DF)
@@ -37,8 +40,6 @@ def main():
                 verbose=1,
             )
         ],
-        validation_steps = 10,
-        steps_per_epoch = 10
     )
     model.load_weights(CHECKPOINTS_DIR.joinpath(f'{model.name}.weights.h5'))
 
@@ -52,7 +53,7 @@ def main():
     cm,report,mets =evaluation.get_cm_and_final_results(predictions, val_dataset.y)
     print('Results by evaluation of dev set\n', mets)
     report.to_csv(TRAINING_DATA_DIR.joinpath(f'classification_report_{model.name}.csv'))
-    confusion_matrix_save(cm,model)
+    evaluation.confusion_matrix_save(cm,model)
 
     print('Checking Saved model integrity.....')
 
@@ -61,27 +62,9 @@ def main():
         )
     loaded_preds = val_dataset.predict(model=loaded)
     close = np.isclose(predictions,loaded_preds)
-    print('Integrity test:', 'passed' if close else 'fail')
+    print('Integrity test:', 'passed' if close.all() else 'fail')
 
-def confusion_matrix_save(cm, model):
-    fig, ax = plt.subplots(1,1,figsize=(8,6))
-    fig.suptitle('Confusion matrix fro validation Data', fontsize=20)
-    ax.set_title(f'Model : {model.name}', color=(0.3,0.3,0.3))
-    cm.plot(ax=ax)
-    ax.set_xticklabels(CLASS_NAMES,
-                    fontsize=8)
-    ax.set_yticklabels(CLASS_NAMES,
-                    fontsize=8)
-    ax.set_xlabel(xlabel='True label',
-                    fontsize=10,
-                    color='Predicted label')
-    ax.set_ylabel(
-        ylabel='First Word',
-        fontsize=10,
-        color='red'
-    )
 
-    fig.savefig(TRAINING_DATA_DIR.joinpath(f'confusion_matrix_{model.name}.png'))
 
 if __name__ == '__main__':
 

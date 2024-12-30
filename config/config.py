@@ -38,6 +38,8 @@ DATASET_DIR = MAIN_DIR.joinpath('datasets')
 ##
 TRAIN_DIR = MAIN_DIR.joinpath('training')
 ##
+TEST_DIR = MAIN_DIR.joinpath('testing')
+##
 CALLBACKS_DIR = TRAIN_DIR.joinpath('callbacks')
 ##
 TRAINING_DATA_DIR = TRAIN_DIR.joinpath('training_data')
