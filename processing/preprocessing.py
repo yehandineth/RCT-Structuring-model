@@ -4,6 +4,9 @@ import numpy as np
 import pickle
 import tf_keras as keras
 import tensorflow as tf
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
 
 from processing.data_handling import file_to_dataframe
 from config.config import *
@@ -20,9 +23,10 @@ class Dataset():
             pickle.dump(obj.text_vectorizer.get_vocabulary(),file)
         with open(SERIALIZATION_DIR.joinpath('char_vocabulary.pkl'), 'wb') as file:
             pickle.dump(obj.char_vectorizer.get_vocabulary(),file)
+        obj = obj.finalize().train_transition_matrix()
         with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'wb') as file:
             pickle.dump(obj.transition_matrix,file)
-        return obj.finalize()
+        return obj
     
 
     @classmethod
@@ -82,12 +86,16 @@ class Dataset():
 
         self.text_vectorizer.adapt(self.pipeline.map(lambda features, labels: features['text']))
         self.char_vectorizer.adapt(self.pipeline.map(lambda features, labels: features['chars']))
+        return self
+
+    def train_transition_matrix(self):
         t_temp = self.transition_matrix.copy()
         for f,label in self.pipeline.unbatch().as_numpy_iterator():
             if f['line_of']:
                 t_temp[last,:] = t_temp[last,:] + label
             last = np.argmax(label)
         self.transition_matrix = t_temp/np.repeat(np.sum(t_temp, axis=-1), NUM_CLASSES).reshape(NUM_CLASSES,NUM_CLASSES)
+        self.save_matrix()
         return self
 
     def finalize(self) -> Self:
@@ -108,7 +116,7 @@ class Dataset():
         for i, (features, labels) in enumerate(self.pipeline.unbatch().as_numpy_iterator()):
             if features['line_of']:
                 test[i,...] = test[i,...] * (1-weight) + np.dot(self.transition_matrix, last_probs) * weight
-            last_probs =  test[i,...]
+            last_probs = test[i,...]
         return test
 
     def split(self, features: Dict[str, Any], labels: Any) -> Tuple[Dict[str, Any], Any]:
@@ -185,10 +193,10 @@ class Dataset():
             ).set_index(
                 keys='text'
             ).to_csv(
-                path_or_buf=MAIN_DIR/f'cache/{dataset}.csv'
+                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{dataset}.csv')
                 )
         dataset : tf.data.Dataset = tf.data.experimental.make_csv_dataset(
-                    file_pattern=f'cache/{dataset}.csv',
+                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{dataset}.csv')),
                     label_name='target',
                     batch_size=BATCH_SIZE,
                     shuffle=False,
@@ -215,3 +223,32 @@ class Dataset():
 
         return np.argmax(self.add_transition_probabilities(model.predict(self.pipeline), transition_weight),axis=-1)
 
+    def save_matrix(self):
+        fig, ax = plt.subplots(1,1,figsize=(8,6))
+        fig.suptitle('Transition matrix Learned From Training Data', fontsize=20)
+        ax.set_title('Probability of second word appearing after first word, given the first word', color=(0.3,0.3,0.3))
+        sns.heatmap(
+            data=100*self.transition_matrix, 
+            annot=True,
+            fmt=f".2f",
+            annot_kws={}, 
+            cmap='Blues', 
+            linewidths=1, 
+            linecolor='black',
+            ax=ax,
+            
+            )
+        ax.set_xticklabels(CLASS_NAMES,
+                        fontsize=8)
+        ax.set_yticklabels(CLASS_NAMES,
+                        fontsize=8)
+        ax.set_xlabel(xlabel='Second Word',
+                        fontsize=10,
+                        color='red')
+        ax.set_ylabel(
+            ylabel='First Word',
+            fontsize=10,
+            color='red'
+        )
+
+        fig.savefig(SERIALIZATION_DIR.joinpath(f'transition_matrix_{DF}.jpg'))

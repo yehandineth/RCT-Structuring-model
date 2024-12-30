@@ -2,7 +2,7 @@ import tf_keras as keras
 from config.config import *
 import tensorflow as tf
 
-def create_model() -> keras.Model:
+def create_model(name='v0.0') -> keras.Model:
 
     input_character = keras.layers.Input(shape=(CHARACTER_TOKEN_LENGTH, ), dtype=tf.int64, name='chars')
 
@@ -48,7 +48,9 @@ def create_model() -> keras.Model:
             },
         outputs= {
             'outputs' : outputs
-            }
+            },
+        #
+        name=name
         )
 
     model.compile(
@@ -66,5 +68,6 @@ def plot_model(model):
     show_layer_activations=True,
     expand_nested=True,
     show_shapes=True,
-    show_trainable=True
+    show_trainable=True,
+    to_file=SERIALIZATION_DIR.joinpath(f'{model.name}.png')
                        )
