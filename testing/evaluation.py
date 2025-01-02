@@ -79,7 +79,7 @@ def get_cm_and_final_results(predictions, truth) -> tuple[ConfusionMatrixDisplay
 
 def confusion_matrix_save(cm, model, location=TRAINING_DATA_DIR):
     fig, ax = plt.subplots(1,1,figsize=(8,6))
-    fig.suptitle('Confusion matrix fro validation Data', fontsize=20)
+    fig.suptitle('Confusion matrix for Data', fontsize=20)
     ax.set_title(f'Model : {model.name}', color=(0.3,0.3,0.3))
     cm.plot(ax=ax)
     ax.set_xticklabels(CLASS_NAMES,

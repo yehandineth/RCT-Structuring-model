@@ -89,6 +89,35 @@ def file_to_dataframe(file_name: str) -> pd.DataFrame:
 
     return pd.DataFrame(data)
 
+def text_to_dataframe(text: str) -> pd.DataFrame:
+    
+    """
+    This function processes a text string into a DataFrame where each row represents a sentence from the input text.
+    Each row contains the sentence text (in lowercase), its line number, and the total number of sentences in the text.
+    text : str
+        Input text string to be processed into sentence-level DataFrame entries.
+    Returns:
+    pd.DataFrame
+        A DataFrame with columns 'target', 'text', 'line_number', and 'total_lines'.
+        'target' is initialized to None, 'text' contains the sentence in lowercase, 'line_number' is the index of the sentence,
+        and 'total_lines' is the total number of sentences in the text.
+    """
+
+    import spacy
+    abstract = []
+    nlp = spacy.load('en_core_web_sm')
+    for i,sent in enumerate(nlp(text).sents):
+        abstract.append(
+            {
+                'target': None,
+                'text': str(sent).lower(),
+                'line_number': i,
+            }
+        )
+    df = pd.DataFrame(abstract)
+    df['total_lines'] = i+1
+    return df
+
 def remove_digits(dataframe: pd.DataFrame) -> pd.DataFrame:
    
    """

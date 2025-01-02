@@ -25,11 +25,10 @@ def main():
     predictions = test_dataset.predict(model=model)
 
     cm,report,mets =evaluation.get_cm_and_final_results(predictions, test_dataset.y)
-    print('Results by evaluation of dev set\n', mets)
+    print('Results for test set\n', mets)
     report.to_csv(TEST_DIR.joinpath(f'classification_report_{model.name}.csv'))
     evaluation.confusion_matrix_save(cm,model, location=TEST_DIR)
     
-
 if __name__ == '__main__':
 
     main()

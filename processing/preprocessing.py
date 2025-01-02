@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-from processing.data_handling import file_to_dataframe
+from processing.data_handling import file_to_dataframe, remove_digits, text_to_dataframe
 from config.config import *
 
 from typing import Dict, Tuple, Any, Self
@@ -19,12 +19,12 @@ class Dataset():
     @classmethod
     def create_training_pipeline(cls, dataset_name) -> Self:
         obj = cls('train', dataset_name).adapt()
-        with open(SERIALIZATION_DIR.joinpath('text_vocabulary.pkl'), 'wb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'text_vocabulary_{NAME}.pkl'), 'wb') as file:
             pickle.dump(obj.text_vectorizer.get_vocabulary(),file)
-        with open(SERIALIZATION_DIR.joinpath('char_vocabulary.pkl'), 'wb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'char_vocabulary_{NAME}.pkl'), 'wb') as file:
             pickle.dump(obj.char_vectorizer.get_vocabulary(),file)
         obj = obj.finalize().train_transition_matrix()
-        with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'wb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'transition_matrix_{NAME}.pkl'), 'wb') as file:
             pickle.dump(obj.transition_matrix,file)
         return obj
     
@@ -32,15 +32,15 @@ class Dataset():
     @classmethod
     def create_validation_pipeline(cls, dataset_name) -> Self:
         obj = cls('dev', dataset_name)
-        with open(SERIALIZATION_DIR.joinpath('text_vocabulary.pkl'), 'rb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'text_vocabulary_{NAME}.pkl'), 'rb') as file:
             obj.text_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
             )
-        with open(SERIALIZATION_DIR.joinpath('char_vocabulary.pkl'), 'rb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'char_vocabulary_{NAME}.pkl'), 'rb') as file:
             obj.char_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
             )
-        with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'rb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'transition_matrix_{NAME}.pkl'), 'rb') as file:
             obj.transition_matrix = pickle.load(file)
 
         return obj.finalize()
@@ -48,17 +48,17 @@ class Dataset():
     @classmethod
     def create_test_pipeline(cls, dataset_name, ) -> Self:
         obj = cls('test', dataset_name)
-        with open(SERIALIZATION_DIR.joinpath('text_vocabulary.pkl'), 'rb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'text_vocabulary_{NAME}.pkl'), 'rb') as file:
             obj.text_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
             )
 
-        with open(SERIALIZATION_DIR.joinpath('char_vocabulary.pkl'), 'rb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'char_vocabulary_{NAME}.pkl'), 'rb') as file:
             obj.char_vectorizer = keras.layers.TextVectorization(
                 vocabulary=pickle.load(file)
             )
         
-        with open(SERIALIZATION_DIR.joinpath('transition_matrix.pkl'), 'rb') as file:
+        with open(SERIALIZATION_DIR.joinpath(f'transition_matrix_{NAME}.pkl'), 'rb') as file:
             obj.transition_matrix = pickle.load(file)
 
         return obj.finalize()
@@ -188,15 +188,15 @@ class Dataset():
             KeyError: If dataset configuration key is invalid
             IOError: If file reading/writing fails
         """
-        file_to_dataframe(
+        remove_digits(file_to_dataframe(
             file_name=DATASET_PATHS[dataset_name].joinpath(f'{dataset}.txt')
-            ).set_index(
+            )).set_index(
                 keys='text'
             ).to_csv(
-                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{dataset}.csv')
+                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{dataset}_{DF}.csv')
                 )
         dataset : tf.data.Dataset = tf.data.experimental.make_csv_dataset(
-                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{dataset}.csv')),
+                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{dataset}_{DF}.csv')),
                     label_name='target',
                     batch_size=BATCH_SIZE,
                     shuffle=False,
@@ -252,3 +252,74 @@ class Dataset():
         )
 
         fig.savefig(SERIALIZATION_DIR.joinpath(f'transition_matrix_{DF}.jpg'))
+
+class Abstract(Dataset):
+
+    @classmethod
+    def from_terminal_input(cls):
+        inp = input("Enter your abstract:")
+        obj = cls(inp)
+        
+        return obj
+
+    def __init__(self, text) -> None:
+
+        self.pipeline = self.prepare_dataset_cache(text)
+        self.lookup = keras.layers.StringLookup(
+            vocabulary=CLASS_NAMES, 
+            output_mode='int'
+            )
+    
+        with open(SERIALIZATION_DIR.joinpath(f'text_vocabulary_{NAME}.pkl'), 'rb') as file:
+            self.text_vectorizer = keras.layers.TextVectorization(
+                vocabulary=pickle.load(file)
+            )
+
+        with open(SERIALIZATION_DIR.joinpath(f'char_vocabulary_{NAME}.pkl'), 'rb') as file:
+            self.char_vectorizer = keras.layers.TextVectorization(
+                vocabulary=pickle.load(file)
+            )
+        
+        with open(SERIALIZATION_DIR.joinpath(f'transition_matrix_{NAME}.pkl'), 'rb') as file:
+            self.transition_matrix = pickle.load(file)
+
+        self.finalize()
+
+    #TODO
+    #Add deleting cache easily functionality - numbering
+    def prepare_dataset_cache(self, text: str) -> tf.data.Dataset:
+        """
+        Prepares and caches a single text for model preprocessing.
+
+        Transforms a an input text into a cached, preprocessed TensorFlow dataset:
+        - Converts to DataFrame with 'text' as index
+        - Saves as CSV in cache directory
+        - Creates TensorFlow dataset with preprocessing
+
+        Args:
+            text: Raw text with every line separated by fullstops.
+
+        Returns:
+            Preprocessed TensorFlow dataset with additional feature transformations
+
+        Raises:
+            FileNotFoundError: If dataset file is missing
+            KeyError: If dataset configuration key is invalid
+            IOError: If file reading/writing fails
+        """
+        cache_name = '0000_test'# TODO: Add numbering
+        dataframe = text_to_dataframe(text=text)
+        remove_digits(dataframe).set_index(keys='text').to_csv(
+                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{cache_name}.csv')
+                )
+        
+        self.text = np.array(dataframe['text']) 
+        
+        dataset : tf.data.Dataset = tf.data.experimental.make_csv_dataset(
+                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{cache_name}.csv')),
+                    label_name='target',
+                    batch_size=BATCH_SIZE,
+                    shuffle=False,
+                    num_epochs=1
+                ) 
+        return dataset.map(self.split, num_parallel_calls = tf.data.AUTOTUNE, deterministic=True).map(self.line_of , num_parallel_calls = tf.data.AUTOTUNE, deterministic=True)

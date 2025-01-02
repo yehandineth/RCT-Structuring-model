@@ -5,7 +5,7 @@ from pathlib import Path
 DF = '20K_replaced_numbers'
 NAME = 'testing'
 
-VOCAB_SIZE = 68000 if DF=='20K_replaced_numbers' else 241000
+VOCAB_SIZE = 68000 if DF=='20K_replaced_numbers' else 331000
 
 NUM_EPOCHS = 1
 
