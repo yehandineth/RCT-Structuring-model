@@ -1,0 +1,8 @@
+
+/*/__pycache__
+/cache/*
+/datasets/*/*
+serialization/*
+training/*/*
+testing/*.csv
+testing/*.png
