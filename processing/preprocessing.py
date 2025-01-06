@@ -286,7 +286,7 @@ class Abstract(Dataset):
         self.finalize()
 
     #TODO
-    #Add deleting cache easily functionality - numbering
+    #Add deleting cache easily functionality if needed only
     def prepare_dataset_cache(self, text: str) -> tf.data.Dataset:
         """
         Prepares and caches a single text for model preprocessing.
@@ -307,7 +307,8 @@ class Abstract(Dataset):
             KeyError: If dataset configuration key is invalid
             IOError: If file reading/writing fails
         """
-        cache_name = '0000_test'# TODO: Add numbering
+        import datetime
+        cache_name = f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
         dataframe = text_to_dataframe(text=text)
         remove_digits(dataframe).set_index(keys='text').to_csv(
                 path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{cache_name}.csv')

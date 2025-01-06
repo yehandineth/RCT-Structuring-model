@@ -6,3 +6,4 @@ serialization/*
 training/*/*
 testing/*.csv
 testing/*.png
+classify/classified/*.txt
