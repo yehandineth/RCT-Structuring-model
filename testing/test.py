@@ -1,5 +1,4 @@
 import tf_keras as keras
-import tensorflow as tf
 import sys
 import os
 from pathlib import Path
@@ -8,7 +7,6 @@ sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 
 
 from processing.preprocessing import Dataset
-from training.model import create_model
 from config.config import *
 import evaluation
 

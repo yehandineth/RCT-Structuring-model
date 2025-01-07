@@ -1,7 +1,6 @@
 from config.config import *
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import pandas as pd
-import tf_keras as keras
 import matplotlib.pyplot as plt
 
 def get_cm_and_final_results(predictions, truth) -> tuple[ConfusionMatrixDisplay, pd.DataFrame, dict[str, float]]:

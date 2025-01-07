@@ -14,9 +14,6 @@ from model import create_model
 from testing import evaluation
 from config.config import *
 
-import warnings
-warnings.filterwarnings("ignore")
-
 def main():
 
     train_dataset = Dataset.create_training_pipeline(DF)
