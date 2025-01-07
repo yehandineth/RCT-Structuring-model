@@ -188,15 +188,17 @@ class Dataset():
             KeyError: If dataset configuration key is invalid
             IOError: If file reading/writing fails
         """
+        self.cache_name = f'{dataset}_{DF}'
         remove_digits(file_to_dataframe(
             file_name=DATASET_PATHS[dataset_name].joinpath(f'{dataset}.txt')
             )).set_index(
                 keys='text'
             ).to_csv(
-                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{dataset}_{DF}.csv')
+                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv')
                 )
+
         dataset : tf.data.Dataset = tf.data.experimental.make_csv_dataset(
-                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{dataset}_{DF}.csv')),
+                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv')),
                     label_name='target',
                     batch_size=BATCH_SIZE,
                     shuffle=False,
@@ -220,8 +222,9 @@ class Dataset():
         return features, tf.one_hot(self.lookup(labels)-1, depth=NUM_CLASSES)
 
     def predict(self, model : keras.Model, transition_weight : float = TRANSITION_WEIGHT):
-
-        return np.argmax(self.add_transition_probabilities(model.predict(self.pipeline), transition_weight),axis=-1)
+        preds =  np.argmax(self.add_transition_probabilities(model.predict(self.pipeline), transition_weight),axis=-1)
+        os.remove(MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv'))
+        return  preds
 
     def save_matrix(self):
         fig, ax = plt.subplots(1,1,figsize=(8,6))
@@ -256,7 +259,7 @@ class Dataset():
 class Abstract(Dataset):
 
     @classmethod
-    def from_terminal_input(cls):
+    def from_terminal_input(cls) -> Self:
         inp = input("Enter your abstract:")
         obj = cls(inp)
         
@@ -285,8 +288,6 @@ class Abstract(Dataset):
 
         self.finalize()
 
-    #TODO
-    #Add deleting cache easily functionality if needed only
     def prepare_dataset_cache(self, text: str) -> tf.data.Dataset:
         """
         Prepares and caches a single text for model preprocessing.
@@ -308,16 +309,18 @@ class Abstract(Dataset):
             IOError: If file reading/writing fails
         """
         import datetime
-        cache_name = f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
-        dataframe = text_to_dataframe(text=text)
+
+        self.cache_name = f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
+
+        dataframe, lines = text_to_dataframe(text=text)
         remove_digits(dataframe).set_index(keys='text').to_csv(
-                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{cache_name}.csv')
+                path_or_buf=MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv')
                 )
         
-        self.text = np.array(dataframe['text']) 
+        self.text = lines
         
         dataset : tf.data.Dataset = tf.data.experimental.make_csv_dataset(
-                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{cache_name}.csv')),
+                    file_pattern=os.path.abspath(MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv')),
                     label_name='target',
                     batch_size=BATCH_SIZE,
                     shuffle=False,

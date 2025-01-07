@@ -89,7 +89,7 @@ def file_to_dataframe(file_name: str) -> pd.DataFrame:
 
     return pd.DataFrame(data)
 
-def text_to_dataframe(text: str) -> pd.DataFrame:
+def text_to_dataframe(text: str) -> tuple[pd.DataFrame, list]:
     
     """
     This function processes a text string into a DataFrame where each row represents a sentence from the input text.
@@ -105,8 +105,10 @@ def text_to_dataframe(text: str) -> pd.DataFrame:
 
     import spacy
     abstract = []
+    lines = []
     nlp = spacy.load('en_core_web_sm')
     for i,sent in enumerate(nlp(text).sents):
+        lines.append(str(sent))
         abstract.append(
             {
                 'target': None,
@@ -116,7 +118,7 @@ def text_to_dataframe(text: str) -> pd.DataFrame:
         )
     df = pd.DataFrame(abstract)
     df['total_lines'] = i+1
-    return df
+    return df, lines
 
 def remove_digits(dataframe: pd.DataFrame) -> pd.DataFrame:
    
