@@ -118,6 +118,11 @@ def text_to_dataframe(text: str) -> tuple[pd.DataFrame, list]:
         )
     df = pd.DataFrame(abstract)
     df['total_lines'] = i+1
+    try:
+        if not i:
+            raise ValueError('Please enter text with periods to properly segment the text into sentences')
+    except ValueError as e:
+        pass
     return df, lines
 
 def remove_digits(dataframe: pd.DataFrame) -> pd.DataFrame:

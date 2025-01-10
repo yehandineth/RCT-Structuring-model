@@ -12,7 +12,6 @@ sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 from processing.preprocessing import Abstract
 from config.config import *
 
-#TODO #preserve capitalizations as before
 def main():
     args = arguments()
     abstract = Abstract.from_terminal_input()
