@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 
 from processing.preprocessing import Dataset
-from model import create_model
+from model import create_model,plot_model
 from testing import evaluation
 from config.config import *
 
@@ -21,7 +21,8 @@ def main():
     keras.mixed_precision.set_global_policy('mixed_float16')
 
     model :keras.Model = create_model(name=NAME)
-
+    plot_model(model)
+    
     history = model.fit(
         train_dataset.pipeline.prefetch(tf.data.AUTOTUNE),
         validation_data=val_dataset.pipeline.prefetch(tf.data.AUTOTUNE),
