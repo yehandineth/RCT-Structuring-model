@@ -34,6 +34,9 @@ def web_out(text):
     """
     st.markdown(html_output+copy_script, unsafe_allow_html=True)
 
+st.set_page_config(page_title="RCT Structuring",
+                    page_icon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNyIgeT0iMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiIGZpbGw9ImJsdWUiLz48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMTIiIGhlaWdodD0iMiIgZmlsbD0iYmx1ZSIvPjwvc3ZnPg==",
+                   layout="wide")
 st.title('PubMed RCT abstract Structuring')
 
 st.sidebar.title('Navigation')
@@ -42,4 +45,5 @@ text = st.text_input(
     'Enter your abstract here',
     )
 
-web_out(text)
+if text:
+    web_out(text)
