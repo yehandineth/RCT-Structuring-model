@@ -58,7 +58,6 @@ def create_model(name='v0.0') -> keras.Model:
             loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.2), 
             metrics=['accuracy']
             )
-    plot_model(model)
     return model
 
 def plot_model(model):
