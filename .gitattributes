@@ -1,0 +1,2 @@
+serialization/testing.keras filter=lfs diff=lfs merge=lfs -text
+serialization/testing.weights.h5 filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,10 @@
+
+/*/__pycache__
+/cache/*.csv
+/datasets/*/*
+training/*/*
+testing/*.csv
+testing/*.png
+serialization/testing.keras
+classify/classified/*.txt
+serialization/testing.weights.h5
