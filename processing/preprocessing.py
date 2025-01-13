@@ -221,9 +221,10 @@ class Dataset():
         """
         return features, tf.one_hot(self.lookup(labels)-1, depth=NUM_CLASSES)
 
-    def predict(self, model : keras.Model, transition_weight : float = TRANSITION_WEIGHT):
+    def predict(self, model : keras.Model, transition_weight : float = TRANSITION_WEIGHT, remove=True):
         preds =  np.argmax(self.add_transition_probabilities(model.predict(self.pipeline), transition_weight),axis=-1)
-        os.remove(MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv'))
+        if remove:
+            os.remove(MAIN_DIR.joinpath('cache').joinpath(f'{self.cache_name}.csv'))
         return  preds
 
     def save_matrix(self):

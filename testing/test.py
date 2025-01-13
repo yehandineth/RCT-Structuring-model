@@ -1,4 +1,5 @@
 import tf_keras as keras
+from tf_keras.optimizers import Adam
 import sys
 import os
 from pathlib import Path
@@ -18,6 +19,8 @@ def main():
     keras.mixed_precision.set_global_policy('mixed_float16')
 
     model = create_model(name=NAME)
+    model.optimizer = Adam(name='Adam')
+
     model.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
 
 

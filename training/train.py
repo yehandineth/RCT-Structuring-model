@@ -6,6 +6,7 @@ import sys
 import os
 from pathlib import Path
 import matplotlib.pyplot as plt
+from tf_keras.optimizers import Adam
 
 sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 
@@ -13,6 +14,12 @@ from processing.preprocessing import Dataset
 from model import create_model,plot_model
 from testing import evaluation
 from config.config import *
+
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+warnings.filterwarnings('ignore')
 
 def main():
 
@@ -45,10 +52,12 @@ def main():
         filepath=SERIALIZATION_DIR.joinpath(f'{model.name}.weights.h5'),
     )
 
-    with open(TRAINING_DATA_DIR.joinpath(f'training_history_{model.name}.pkl'), mode='wb') as file:
-        pickle.dump(history, file)
-
-    predictions = val_dataset.predict(model=model)
+    #Use this if you need to save history
+    if True:
+        with open(TRAINING_DATA_DIR.joinpath(f'training_history_{model.name}.pkl'), mode='wb') as file:
+            pickle.dump(history, file)
+    train_dataset.predict(model=model)
+    predictions = val_dataset.predict(model=model, remove=False)
 
     cm,report,mets =evaluation.get_cm_and_final_results(predictions, val_dataset.y)
     print('Results by evaluation of dev set\n', mets)
@@ -57,10 +66,9 @@ def main():
 
     print('Checking Saved model integrity.....')
 
-    loaded = keras.models.load_model(
-        filepath=SERIALIZATION_DIR.joinpath(f'{model.name}.keras'),
-        )
-    loaded.optimizer = model.optimizer
+    loaded = create_model(name=NAME)
+    loaded.optimizer = Adam(name='Adam')
+    loaded.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
     loaded_preds = val_dataset.predict(model=loaded)
     close = np.isclose(predictions,loaded_preds, atol=1e-3)
     print('Integrity test:', 'passed' if close.all() else 'fail')

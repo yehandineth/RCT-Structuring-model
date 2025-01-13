@@ -3,7 +3,7 @@ from pathlib import Path
 
 #Change each experiment
 DF = '20K_replaced_numbers'
-NAME = 'testing'
+NAME = 'V.0.0-Beta'
 
 VOCAB_SIZE = 68000 if DF=='20K_replaced_numbers' else 331000
 
@@ -11,7 +11,7 @@ NUM_EPOCHS = 1
 
 SEED = 42
 
-TRANSITION_WEIGHT = 0.33
+TRANSITION_WEIGHT = 0.16
 
 EMBEDDING_DIMENSIONS = 128
 
