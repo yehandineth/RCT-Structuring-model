@@ -11,7 +11,7 @@ from tf_keras.optimizers import Adam
 sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 
 from processing.preprocessing import Dataset
-from model import create_model,plot_model
+from model import create_model,plot_model, load_model
 from testing import evaluation
 from config.config import *
 
@@ -53,9 +53,10 @@ def main():
     )
 
     #Use this if you need to save history
-    if True:
+    if False:
         with open(TRAINING_DATA_DIR.joinpath(f'training_history_{model.name}.pkl'), mode='wb') as file:
             pickle.dump(history, file)
+
     train_dataset.predict(model=model)
     predictions = val_dataset.predict(model=model, remove=False)
 
@@ -66,9 +67,7 @@ def main():
 
     print('Checking Saved model integrity.....')
 
-    loaded = create_model(name=NAME)
-    loaded.optimizer = Adam(name='Adam')
-    loaded.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
+    loaded = load_model(name=NAME)
     loaded_preds = val_dataset.predict(model=loaded)
     close = np.isclose(predictions,loaded_preds, atol=1e-3)
     print('Integrity test:', 'passed' if close.all() else 'fail')

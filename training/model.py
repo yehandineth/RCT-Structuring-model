@@ -70,3 +70,9 @@ def plot_model(model):
     show_trainable=True,
     to_file=SERIALIZATION_DIR.joinpath(f'{model.name}.png')
                        )
+
+def load_model(name=NAME):
+    model = create_model(name=name)
+    model.optimizer = keras.optimizers.Adam(name='Adam')
+    model.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
+    return model

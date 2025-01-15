@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 from processing.preprocessing import Dataset
 from config.config import *
 import evaluation
-from training.model import create_model
+from training.model import create_model, load_model
 
 
 def main():
@@ -18,11 +18,7 @@ def main():
     test_dataset = Dataset.create_test_pipeline(DF)
     keras.mixed_precision.set_global_policy('mixed_float16')
 
-    model = create_model(name=NAME)
-    model.optimizer = Adam(name='Adam')
-
-    model.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
-
+    model = load_model(name=NAME)
 
     predictions = test_dataset.predict(model=model)
 

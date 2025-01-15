@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 
 from processing.preprocessing import Abstract
 from config.config import *
-from training.model import create_model
+from training.model import create_model,load_model
 
 def main():
     args = arguments()
@@ -44,14 +44,9 @@ def classify(abstract: Abstract):
 
 
 def get_labels(dataset :Abstract):
-    set_global_policy('mixed_float16')
-
-    model = create_model(name=NAME)
-    model.optimizer = Adam(name='Adam')
-    model.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
     
-
-    return dataset.predict(model=model)
+    set_global_policy('mixed_float16')
+    return dataset.predict(model=load_model(NAME))
 
 def arguments():
     parser = ArgumentParser(
