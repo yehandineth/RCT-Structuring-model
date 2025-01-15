@@ -72,7 +72,7 @@ def plot_model(model):
                        )
 
 def load_model(name=NAME):
-    model = create_model(name=name)
-    model.optimizer = keras.optimizers.Adam(name='Adam')
-    model.load_weights(SERIALIZATION_DIR.joinpath(f'{NAME}.weights.h5'))
-    return model
+
+    return keras.models.load_model(
+        filepath=SERIALIZATION_DIR.joinpath(f'{NAME}.keras')
+        )

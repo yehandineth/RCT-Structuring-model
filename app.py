@@ -7,16 +7,22 @@ sys.path.append(os.path.abspath(Path(__file__).parent))
 
 from classify.classify import classify
 from processing.preprocessing import Abstract
+from config.config import NAME
+from training.model import load_model
 
-from processing.data_handling import text_to_dataframe
+st.set_page_config(page_title="RCT Structuring",
+                    page_icon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNyIgeT0iMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiIGZpbGw9ImJsdWUiLz48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMTIiIGhlaWdodD0iMiIgZmlsbD0iYmx1ZSIvPjwvc3ZnPg==",
+                   layout="wide")
 
 @st.cache_data
-def classify_cache(text):
-    return classify(Abstract(text))
+def cache_model():
+    return load_model(name=NAME)
+
+model = cache_model()
 
 @st.cache_data
 def web_out(text):
-    classified = classify_cache(text)
+    classified = classify(Abstract(text),model=model)
     html_output = "<div id='copy-box' style='background-color: white; padding: 10px; border: 1px solid #ccc; border-radius: 10px; color: #404040;'>"
     for cls, texts in classified.items():
         html_output += f"<p><strong>{cls}</strong></p>"
@@ -34,9 +40,7 @@ def web_out(text):
     """
     st.markdown(html_output+copy_script, unsafe_allow_html=True)
 
-st.set_page_config(page_title="RCT Structuring",
-                    page_icon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNyIgeT0iMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiIGZpbGw9ImJsdWUiLz48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMTIiIGhlaWdodD0iMiIgZmlsbD0iYmx1ZSIvPjwvc3ZnPg==",
-                   layout="wide")
+
 st.title('PubMed RCT abstract Structuring')
 
 st.sidebar.title('Navigation')

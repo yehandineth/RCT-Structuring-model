@@ -45,12 +45,11 @@ def main():
                 verbose=1,
             )
         ],
+        steps_per_epoch=100,
     )
     model.load_weights(CHECKPOINTS_DIR.joinpath(f'{model.name}.weights.h5'))
 
-    model.save_weights(
-        filepath=SERIALIZATION_DIR.joinpath(f'{model.name}.weights.h5'),
-    )
+    model.save(SERIALIZATION_DIR.joinpath(f'{model.name}.keras'))
 
     #Use this if you need to save history
     if False:

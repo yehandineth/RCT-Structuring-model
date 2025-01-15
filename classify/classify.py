@@ -16,7 +16,8 @@ from training.model import create_model,load_model
 def main():
     args = arguments()
     abstract = Abstract.from_terminal_input()
-    classified = classify(abstract)
+    model = load_model(NAME)
+    classified = classify(abstract, model=model)
     if args.output:
         to_file(classified, MAIN_DIR.joinpath('classify').joinpath('classified').joinpath(args.output))
         print('Successfully saved to', args.output)
@@ -31,9 +32,9 @@ def to_file(classified: dict , path: Path):
             f.write('\n')
             f.write('\n')
 
-def classify(abstract: Abstract):
+def classify(abstract: Abstract, model):
         
-    outputs = get_labels(dataset=abstract)
+    outputs = get_labels(dataset=abstract, model=model)
     classified = {}
     for x,y in zip(abstract.text, np.array(CLASS_NAMES)[outputs]):
         if y not in classified.keys():
@@ -43,10 +44,10 @@ def classify(abstract: Abstract):
     return classified
 
 
-def get_labels(dataset :Abstract):
+def get_labels(dataset :Abstract, model):
     
     set_global_policy('mixed_float16')
-    return dataset.predict(model=load_model(NAME))
+    return dataset.predict(model=model)
 
 def arguments():
     parser = ArgumentParser(
