@@ -6,9 +6,4 @@ training/*/*
 testing/*.csv
 testing/*.png
 classify/classified/*.txt
-<<<<<<< Updated upstream
-/experiment.ipynb
-=======
 experiment.ipynb
-experiment.ipynb
->>>>>>> Stashed changes

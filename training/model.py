@@ -74,5 +74,5 @@ def plot_model(model):
 def load_model(name=NAME):
 
     return keras.models.load_model(
-        filepath=SERIALIZATION_DIR.joinpath(f'{NAME}.keras')
+        filepath=SERIALIZATION_DIR.joinpath(f'{NAME}.h5')
         )

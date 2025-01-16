@@ -49,19 +49,22 @@ def main():
     )
     model.load_weights(CHECKPOINTS_DIR.joinpath(f'{model.name}.weights.h5'))
 
-    model.save(SERIALIZATION_DIR.joinpath(f'{model.name}.keras'))
+    model.save(SERIALIZATION_DIR.joinpath(f'{model.name}.h5'))
 
     #Use this if you need to save history
     if False:
         with open(TRAINING_DATA_DIR.joinpath(f'training_history_{model.name}.pkl'), mode='wb') as file:
             pickle.dump(history, file)
 
-    train_dataset.predict(model=model)
+    predictions = train_dataset.predict(model=model)
+    cm,report,mets =evaluation.get_cm_and_final_results(predictions, train_dataset.y)
+    print('Results by evaluation of train set\n', mets)
+    report.to_csv(TRAINING_DATA_DIR.joinpath(f'classification_report_{model.name}_train.csv'))
+    
     predictions = val_dataset.predict(model=model, remove=False)
-
     cm,report,mets =evaluation.get_cm_and_final_results(predictions, val_dataset.y)
     print('Results by evaluation of dev set\n', mets)
-    report.to_csv(TRAINING_DATA_DIR.joinpath(f'classification_report_{model.name}.csv'))
+    report.to_csv(TRAINING_DATA_DIR.joinpath(f'classification_report_{model.name}_dev.csv'))
     evaluation.confusion_matrix_save(cm,model)
 
     print('Checking Saved model integrity.....')
