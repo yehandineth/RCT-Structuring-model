@@ -29,6 +29,9 @@ def web_out(text):
         html_output += f"<p>{'<br>'.join(texts)}</p>"
     html_output += "<button style='position: absolute; bottom: 0px; right: 10px; background-color: #4CAF50; color: white; padding: 10px 24px; border: none; border-radius: 4px; cursor: pointer;' onclick='copyText()'>Copy</button>"
     html_output += "</div>"
+    import tf_keras as keras
+    import tensorflow as tf
+    st.markdown(f'{keras.__version__}    {tf.__version__}')
 
     copy_script = """
     <script>

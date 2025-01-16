@@ -5,7 +5,6 @@ from tf_keras.mixed_precision import set_global_policy
 import numpy as np
 from argparse import ArgumentParser
 import datetime
-from tf_keras.optimizers import Adam
 
 sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 
