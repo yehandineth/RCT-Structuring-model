@@ -14,6 +14,10 @@ st.set_page_config(page_title="RCT Structuring",
                     page_icon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNyIgeT0iMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiIGZpbGw9ImJsdWUiLz48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMTIiIGhlaWdodD0iMiIgZmlsbD0iYmx1ZSIvPjwvc3ZnPg==",
                    layout="wide")
 
+import tf_keras as keras
+import tensorflow as tf
+st.markdown(f'{keras.__version__}    {tf.__version__}')
+
 @st.cache_data
 def cache_model():
     return load_model(name=NAME)
@@ -29,9 +33,7 @@ def web_out(text):
         html_output += f"<p>{'<br>'.join(texts)}</p>"
     html_output += "<button style='position: absolute; bottom: 0px; right: 10px; background-color: #4CAF50; color: white; padding: 10px 24px; border: none; border-radius: 4px; cursor: pointer;' onclick='copyText()'>Copy</button>"
     html_output += "</div>"
-    import tf_keras as keras
-    import tensorflow as tf
-    st.markdown(f'{keras.__version__}    {tf.__version__}')
+
 
     copy_script = """
     <script>
