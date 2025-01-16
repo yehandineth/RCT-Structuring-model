@@ -55,6 +55,8 @@ text = st.text_input(
 
 if text:
     web_out(text)
+    st.markdown('# Thank You for using this app❤\n---\n>')
+
 
 footer="""<style>
 a:link , a:visited{
