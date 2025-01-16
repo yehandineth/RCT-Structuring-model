@@ -15,7 +15,7 @@ st.set_page_config(page_title="RCT Structuring",
                    layout="wide")
 
 
-@st.cache_data
+# @st.cache_data
 def cache_model():
     model = load_model(name=NAME)
     model.summary()
@@ -23,7 +23,7 @@ def cache_model():
 
 model = cache_model()
 
-@st.cache_data
+# @st.cache_data
 def web_out(text):
     classified = classify(Abstract(text),model=model)
     html_output = "<div id='copy-box' style='background-color: white; padding: 10px; border: 1px solid #ccc; border-radius: 10px; color: #404040;'>"
