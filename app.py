@@ -15,7 +15,7 @@ st.set_page_config(page_title="RCT Structuring",
                    layout="wide")
 
 
-# @st.cache_data
+@st.cache_resource
 def cache_model():
     model = load_model(name=NAME)
     model.summary()
@@ -23,7 +23,7 @@ def cache_model():
 
 model = cache_model()
 
-# @st.cache_data
+@st.cache_data
 def web_out(text):
     classified = classify(Abstract(text),model=model)
     html_output = "<div id='copy-box' style='background-color: white; padding: 10px; border: 1px solid #ccc; border-radius: 10px; color: #404040;'>"
@@ -55,3 +55,32 @@ text = st.text_input(
 
 if text:
     web_out(text)
+
+footer="""<style>
+a:link , a:visited{
+color: #aaaaff;
+background-color: transparent;
+text-decoration: underline;
+}
+
+a:hover,  a:active {
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
+
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: navy-blue;
+color: #ccc;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>Developed with ❤ by <a style='display: block; text-align: center;' href="https://www.linkedin.com/in/yehan-dineth/" target="_blank">Yehan Dineth</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)

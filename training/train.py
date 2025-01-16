@@ -45,7 +45,7 @@ def main():
                 verbose=1,
             )
         ],
-        steps_per_epoch=100,
+        # steps_per_epoch=100, #For Fast experimentations for erros in deployement
     )
     model.load_weights(CHECKPOINTS_DIR.joinpath(f'{model.name}.weights.h5'))
 
