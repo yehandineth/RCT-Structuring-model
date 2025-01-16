@@ -88,6 +88,7 @@ class Dataset():
         self.char_vectorizer.adapt(self.pipeline.map(lambda features, labels: features['chars']))
         return self
 
+    #TODO: Add class weights and if still matrix does not buff the accuracy Add usual probabilities - BOMRC(buff)
     def train_transition_matrix(self):
         t_temp = self.transition_matrix.copy()
         for f,label in self.pipeline.unbatch().as_numpy_iterator():

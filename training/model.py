@@ -70,3 +70,9 @@ def plot_model(model):
     show_trainable=True,
     to_file=SERIALIZATION_DIR.joinpath(f'{model.name}.png')
                        )
+
+def load_model(name=NAME):
+
+    return keras.models.load_model(
+        filepath=SERIALIZATION_DIR.joinpath(f'{NAME}.h5')
+        )
