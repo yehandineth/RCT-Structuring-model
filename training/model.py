@@ -16,7 +16,7 @@ def create_model(name='v0.0') -> keras.Model:
     x2 = keras.layers.Embedding(
         input_dim = VOCAB_SIZE, 
         output_dim =EMBEDDING_DIMENSIONS,
-        name = 'text_embeddings/embeddings:0'
+        name = 'text_embeddings'
     )(input_tokens)
     x2 = keras.layers.Conv1D(128,7, activation='relu', name='Conv_1')(x2)
     x2 = keras.layers.MaxPool1D(2, name='Pool_1')(x2)
