@@ -1,6 +1,6 @@
-# Deep Neural Network for adding structure to RCT Abstracts of Medical Research Papers
+# RCT Abstract Classification Model
 
-Welcome to the RCT Abstract Classification Model repository! This project focuses on classifying sentences within research abstracts into predefined categories using deep learning techniques.
+A deep learning approach to identify and categorize sentences in Randomized Controlled Trial (RCT) abstracts.
 
 ## Table of Contents
 
@@ -16,16 +16,14 @@ Welcome to the RCT Abstract Classification Model repository! This project focuse
 
 ## Introduction
 
-This project aims to give me hands-on experience building models by replicating SOTA deep learning model, **Neural Networks for Joint Sentence Classification
-in Medical Paper Abstracts**. 
-
+This project focuses on classifying sentences in medical research abstracts into predefined categories. Inspired by research on neural networks for sentence classification, it aims to streamline abstract structuring.
 
 ## Features
 
-- **Sentence Classification**: Categorizes each sentence in a research abstract into predefined labels.
-- **User-Friendly Interface**: Designed for ease of use, allowing users to input text and receive structured outputs.
-- **Extensibility**: Modular design enables easy updates and integration with other tools.
-- **Visualizations and metrics**: Great visualizations depicting the model architecture and model performance.
+- Automated sentence classification
+- Configurable for multiple labels
+- Extensible codebase for broader use cases
+- Convenient visualizations of performance
 
 ## Setup
 
@@ -33,7 +31,7 @@ To set up the project locally, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yehandineth/NLP_Learning/RCTabstractmodel.git
+   git clone https://github.com/yehandineth/RCT-Structuring-model
    ```
 
 2. **Create a virtual environment** (optional but recommended):
@@ -57,70 +55,61 @@ After setting up, you can use the model as follows:
 
 1. **Train the model** (if training from scratch):
    ```bash
-   python train.py 
+   python training/train.py 
    ```
 
-2. **Classify sentences in a new abstract**:
+2.  **Testing the model** (if training from scratch)
    ```bash
-   python classify.py --input data/sample_abstract.txt --output results/output.json
+   python testing/test.py 
    ```
 
-3. **Evaluate the model**:
+3. **Classify sentences in a new abstract** (Usage from terminal)
    ```bash
-   python evaluate.py --config configs/eval_config.yaml
+   python classify/classify.py  --output file_name.txt
+   ```
+   And type in your abstract in the terminal
+
+4. **Running the web app** (You can view the saved metrics model images and much more using this web app)
+   ```bash
+   streamlit run classifier.py
    ```
 
 ## Project Structure
 
 ```
-RCTabstractmodel/
-├── cache/                  # Cache dir
-├── config/                 # Configuration files before usage
-├── datasets/               # Datasets for training dev and testing
-├── processing/             # Pipeline for data and preprocessing 
-├── serialization/          # Saved components after training 
-├── testing/                # Testing model
-├── training/               # Training model
-├       ├── checkpoints/               # Training checkpoints
-├       ├── training_data/             # Training history and data
-├── requirements.txt        # List of dependencies
-├── README.md               # Project documentation
-└── LICENSE                 # License information
+RCT-Structuring-model/
+├── classify/
+├── config/
+├── datasets/
+├── pages/
+├── processing/
+├── serialization/
+├── testing/
+├── training/
+├── classifier.py
+├── CONTRIBUTING.md
+├── requirements.txt
+└── README.md
 ```
 
 ## Technologies Used
 
 - **Python**: Programming language
-- **PyTorch**: Deep learning framework
-- **NLTK**: Natural Language Toolkit for text processing
-- **Scikit-learn**: Machine learning utilities
-- **Jupyter Notebook**: For experimentation and prototyping
+- **Tensorflow and Keras**: Deep learning framework
+- **Spacy**: NLP framework 
 
 ## Acknowledgments
 
 - The dataset for this project was sourced from [PubMed 200k RCT](https://arxiv.org/pdf/1710.06071).
-- The model structure was inspired by the architecture described in [Neural Networks for Joint Sentence Classification
-in Medical Paper Abstracts
-](https://arxiv.org/pdf/1612.05251).
+- The model structure was inspired by the architecture described in [Neural Networks for Joint Sentence Classificationin Medical Paper Abstracts](https://arxiv.org/pdf/1612.05251).
 - The whole project is inspired by a hands-on lesson from [Tensorflow for Deep Learning Bootcamp](https://www.udemy.com/share/104ssS3@pZvYAlDoowD1INBPOwpbcXzvGkDMfmvOq6RrSKFxcHN0ocwWgWyIWZMscDlGYzCWeg==/)
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/YourFeature`
-3. Commit your changes: `git commit -m 'Add new feature'`
-4. Push to the branch: `git push origin feature/YourFeature`
-5. Open a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 
 ## Contact
 
-For questions or suggestions, please open an issue or contact [Yehan Dineth](mailto:ydinethw@gmail.com).
-
+Open an issue or email [Yehan Dineth](mailto:ydinethw@gmail.com) with questions.
 
 >All content is for learning purposes only.

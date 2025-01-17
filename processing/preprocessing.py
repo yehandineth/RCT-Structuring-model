@@ -231,7 +231,7 @@ class Dataset():
     def save_matrix(self):
         fig, ax = plt.subplots(1,1,figsize=(8,6))
         fig.suptitle('Transition matrix Learned From Training Data', fontsize=20)
-        ax.set_title('Probability of second word appearing after first word, given the first word', color=(0.3,0.3,0.3))
+        ax.set_title('Probability of second sentence appearing after first sentence, given the first sentence', color=(0.3,0.3,0.3))
         sns.heatmap(
             data=100*self.transition_matrix, 
             annot=True,
@@ -247,11 +247,11 @@ class Dataset():
                         fontsize=8)
         ax.set_yticklabels(CLASS_NAMES,
                         fontsize=8)
-        ax.set_xlabel(xlabel='Second Word',
+        ax.set_xlabel(xlabel='Second Sentence',
                         fontsize=10,
                         color='red')
         ax.set_ylabel(
-            ylabel='First Word',
+            ylabel='First Sentence',
             fontsize=10,
             color='red'
         )
