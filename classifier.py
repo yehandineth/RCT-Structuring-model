@@ -50,7 +50,7 @@ st.title('PubMed RCT abstract Structuring')
 st.sidebar.title('How to use')
 
 st.sidebar.markdown('Type in your abstract as it is and press Enter. \n\n Enjoy! 🤗')
-st.sidebar.markdown("If you are interested check out behind hte scenes to see the model statistics.📈 ")
+st.sidebar.markdown("If you are interested check out behind the scenes to see the some cool stuff.📈 ")
 
 text = st.text_input(
     'Enter your abstract here',
